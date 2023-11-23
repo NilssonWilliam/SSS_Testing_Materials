@@ -17,9 +17,9 @@ threshold = 10
 
 shares = 10
 
-HOST = "localhost"
+HOST = ""
 
-REMOTE = ""
+REMOTE = "localhost"
 
 PORT = 11111
 
@@ -45,14 +45,14 @@ def test_secretsharing(iters):
     for i in range(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((REMOTE, PORT+1))
+            s.bind((HOST, PORT+1))
             s.listen(1)        
             data = RINT(4294967296)
             start = time.time()
             secrets = generate_secret_shares(data)
             for v in secrets:
                 c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                c.connect((HOST, PORT))
+                c.connect((REMOTE, PORT))
                 c.send(pickle.dumps(v))
                 c.close()
             conn, addr = s.accept()
@@ -66,12 +66,12 @@ def test_unprotected(iters):
     for i in range(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((REMOTE, PORT+1))
+            s.bind((HOST, PORT+1))
             s.listen(1)        
             data = RINT(4294967296)
             start = time.time()
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((HOST, PORT))
+            c.connect((REMOTE, PORT))
             c.send(str(data).encode("utf-8"))
             c.close()
             conn, addr = s.accept()
@@ -85,18 +85,18 @@ def test_aes(iters):
     for i in range(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((REMOTE, PORT+1))
+            s.bind((HOST, PORT+1))
             s.listen(1)        
             data = RINT(4294967296)
             key = os.urandom(16)
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((HOST, PORT))
+            c.connect((REMOTE, PORT))
             c.send(key)
             c.close()
             start = time.time()
             encrypted = aes.encrypt(key, str(data))
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((HOST, PORT))
+            c.connect((REMOTE, PORT))
             c.send(encrypted)
             c.close()
             conn, addr = s.accept()
