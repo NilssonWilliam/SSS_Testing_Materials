@@ -19,7 +19,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "localhost"
+REMOTE = "192.168.1.212"
 
 PORT = 11111
 
