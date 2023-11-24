@@ -5,6 +5,7 @@ import socket
 import pickle
 import threading
 import aes
+import shamirs
 
 """
 Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -102,6 +103,32 @@ def test_secretsharing(iters):
             c.sendall(str(secret).encode("utf-8"))
             c.close()
 
+def test_secretsharing_package(iters):
+    for i in range(iters):
+        global shares_acc
+        shares_acc = []
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.settimeout(0.1)
+            s.bind((HOST, PORT))
+            s.listen(1)        
+            while True:
+                try: 
+                    conn, addr = s.accept() 
+                except socket.timeout:
+                    if len(shares_acc) >= threshold:
+                        break
+                    pass
+                except:
+                    raise
+                else:
+                    threading.Thread(target=handle_client,args=(conn, addr)).start()
+            secret = shamirs.interpolate(shares_acc, threshold=threshold)
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c.connect((REMOTE, PORT+1))
+            c.sendall(str(secret).encode("utf-8"))
+            c.close()
+
 def test_unprotected(iters):
     for i in range(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -148,6 +175,8 @@ def main():
     test_unprotected(iters)
     print("Starting secret sharing tests")
     test_secretsharing(iters)
+    print("Starting secret sharing tests using package implementation")
+    test_secretsharing_package(iters)
     print("Starting AES tests")
     test_aes(iters)
     

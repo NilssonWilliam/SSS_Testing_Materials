@@ -6,6 +6,7 @@ import pickle
 import time
 import aes
 import os
+import shamirs
 
 """
 Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -50,6 +51,27 @@ def test_secretsharing(iters):
             data = RINT(4294967296)
             start = time.time()
             secrets = generate_secret_shares(data)
+            for v in secrets:
+                c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                c.connect((REMOTE, PORT))
+                c.send(pickle.dumps(v))
+                c.close()
+            conn, addr = s.accept()
+            ans = conn.recv(4096).decode("utf-8")
+            end = time.time()
+            if(int(ans) != data):
+                print(f"Server answered with {ans} but secret was {data}")
+            print(f"Time used was {end-start}")
+
+def test_secretsharing_package(iters):
+    for i in range(iters):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT+1))
+            s.listen(1)        
+            data = RINT(4294967296)
+            start = time.time()
+            secrets = shamirs.shares(data, quantity=shares, threshold=threshold)
             for v in secrets:
                 c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 c.connect((REMOTE, PORT))
@@ -119,6 +141,8 @@ def main():
     test_unprotected(iters)
     print("Starting secret sharing tests")
     test_secretsharing(iters)
+    print("Starting secret sharing tests using package implementation")
+    test_secretsharing_package(iters)
     print("Starting AES tests")
     test_aes(iters)
     

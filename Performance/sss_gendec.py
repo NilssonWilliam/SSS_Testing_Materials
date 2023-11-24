@@ -1,6 +1,8 @@
 import random
 import functools
 import sys
+import cProfile
+from pstats import SortKey, Stats
 
 """
 Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -76,12 +78,16 @@ def main():
         SHARES = int(sys.argv[1])
     if len(sys.argv) >= 3:
         SHARES = int(sys.argv[2])
-    data = RINT(10000)
-    print(data)
-    secrets = generate_secret_shares(data)
-    print(secrets)
-    recovered = recover_secret(secrets)
-    print(recovered)
+    with cProfile.Profile() as profile:
+        data = RINT(10000)
+        print(data)
+        secrets = generate_secret_shares(data)
+        print(secrets)
+        recovered = recover_secret(secrets)
+        print(recovered)
+        (
+            Stats(profile).strip_dirs().sort_stats(SortKey.CALLS).print_stats()
+        )
 
 if __name__ == "__main__":
     main()
