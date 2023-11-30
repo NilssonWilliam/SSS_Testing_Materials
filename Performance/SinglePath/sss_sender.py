@@ -47,7 +47,7 @@ def test_secretsharing(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
-            s.listen(1)        
+            s.listen()        
             data = RINT(4294967296)
             start = time.time()
             secrets = generate_secret_shares(data)
@@ -68,7 +68,7 @@ def test_secretsharing_package(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
-            s.listen(1)        
+            s.listen()        
             data = RINT(4294967296)
             start = time.time()
             secrets = shamirs.shares(data, quantity=shares, threshold=threshold)
@@ -89,7 +89,7 @@ def test_unprotected(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
-            s.listen(1)        
+            s.listen()        
             data = RINT(4294967296)
             start = time.time()
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -108,7 +108,7 @@ def test_aes(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
-            s.listen(1)        
+            s.listen()        
             data = RINT(4294967296)
             key = os.urandom(16)
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

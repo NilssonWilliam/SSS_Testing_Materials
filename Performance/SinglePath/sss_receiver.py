@@ -83,9 +83,9 @@ def test_secretsharing(iters):
         shares_acc = []
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.settimeout(0.1)
+            s.settimeout(0.00001)
             s.bind((HOST, PORT))
-            s.listen(1)        
+            s.listen()        
             while True:
                 try: 
                     conn, addr = s.accept() 
@@ -109,9 +109,9 @@ def test_secretsharing_package(iters):
         shares_acc = []
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.settimeout(0.1)
+            s.settimeout(0.00001)
             s.bind((HOST, PORT))
-            s.listen(1)        
+            s.listen()        
             while True:
                 try: 
                     conn, addr = s.accept() 
@@ -134,7 +134,7 @@ def test_unprotected(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
-            s.listen(1)
+            s.listen()
             conn, addr = s.accept()
             data = conn.recv(4096).decode("utf-8")        
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -147,13 +147,13 @@ def test_aes(iters):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
-            s.listen(1)
+            s.listen()
             conn, addr = s.accept()
             key = conn.recv(4096)        
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
-            s.listen(1)
+            s.listen()
             conn, addr = s.accept()
             data = conn.recv(4096)     
             res = aes.decrypt(key, data) 
