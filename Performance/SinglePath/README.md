@@ -1,6 +1,6 @@
 # Single path tests
 
-In this folder are all the files that are required to test secret sharing on a single host or over a single path. 
+In this folder are all the files that are required to test secret sharing on a single host or over a single path. Python version >=3.7 is required.
 
 ## sss_gendec.py
 

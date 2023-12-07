@@ -1,6 +1,6 @@
 # Multi path tests
 
-In this folder are all the files that are required to test secret sharing on a multiple hosts. 
+In this folder are all the files that are required to test secret sharing on a multiple hosts. Python version >=3.7 is required.
 
 ## sss_forwarder.py
 
