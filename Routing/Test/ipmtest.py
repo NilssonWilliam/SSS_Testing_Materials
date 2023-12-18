@@ -23,12 +23,17 @@ def main():
     net = IPNet(topo=MyTopology()) 
     try:
         net.start()
-        time.sleep(20)
-        h1 = net.get('r5')
-        res = h1.cmd("route")
-        print(res)
+        h1 = net.get("h1")
+        h2 = net.get("h2")
+        print(h1.IP() + h2.IP())
+        r1 = net.get("r1")
+        r1pcap = r1.popen("sudo tcpdump -i any -nn -s 0 -w r1cap ")
+        r2 = net.get("r2")
+        r2pcap = r2.popen("sudo tcpdump -i any -nn -s 0 -w r2cap ")
         IPCLI(net)
     finally:
+        r1pcap.terminate()
+        r2pcap.terminate()
         net.stop()
 
 if __name__ == "__main__":
