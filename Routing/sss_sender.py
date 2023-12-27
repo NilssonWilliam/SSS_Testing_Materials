@@ -4,9 +4,6 @@ import sys
 import socket
 import pickle
 import time
-import aes
-import os
-import shamirs
 
 """
 Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -20,7 +17,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "192.168.2.1"
+REMOTE = "192.168.2.2"
 
 REMOTES = [REMOTE]
 
@@ -74,6 +71,7 @@ def main():
         shares = int(sys.argv[1])
     print("Starting secret sharing tests")
     test_secretsharing(iters)
+    print("Finished")
     
 
 if __name__ == "__main__":

@@ -4,8 +4,6 @@ import sys
 import socket
 import pickle
 import threading
-import aes
-import shamirs
 
 """
 Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -19,7 +17,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "192.168.1.1"
+REMOTE = "192.168.1.2"
 
 PORT = 11111
 

@@ -2,6 +2,8 @@ from ipmininet.ipnet import IPNet
 from ipmininet.cli import IPCLI
 from ipmininet.iptopo import IPTopo
 import time
+import glob
+import os
 
 class MyTopology(IPTopo):
     def build(self, *args, **kwargs):
@@ -20,20 +22,23 @@ class MyTopology(IPTopo):
         super().build(*args, **kwargs)
 
 def main():
+    files = glob.glob("Logs/*")
+    for f in files:
+        os.remove(f)
     net = IPNet(topo=MyTopology()) 
+    captures = []
     try:
         net.start()
-        h1 = net.get("h1")
-        h2 = net.get("h2")
-        print(h1.IP() + h2.IP())
-        r1 = net.get("r1")
-        r1pcap = r1.popen("sudo tcpdump -i any -nn -s 0 -w r1cap ")
-        r2 = net.get("r2")
-        r2pcap = r2.popen("sudo tcpdump -i any -nn -s 0 -w r2cap ")
+        src = net.get("h1")
+        dst = net.get("h2")
+        print(src.IP() + " " + dst.IP())
+        time.sleep(20)
+        for i, r in enumerate(net.routers):
+            captures.append(r.popen("sudo tcpdump -i any -nn -s 0 -w Logs/simple_test" + str(i+1)))
         IPCLI(net)
     finally:
-        r1pcap.terminate()
-        r2pcap.terminate()
+        for cap in captures:
+            cap.terminate()
         net.stop()
 
 if __name__ == "__main__":
