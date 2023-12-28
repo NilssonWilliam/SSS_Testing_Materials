@@ -6,7 +6,7 @@ import datetime
 FILEPATH = "/home/ubuntu/SSS_Testing_Materials/Routing/Logs"
 
 SOURCE = "192.168.1.2"
-DESTINATION = "192.168.2.2"
+DESTINATION = "192.168.2.1"
 SSSPORT = "11111"
 
 FILES = ["simple_test"]
@@ -77,7 +77,8 @@ def getAllRoutes(data, index):
                     sharePaths[i].append([])
             for (share, nr), time in run:
                 sharePaths[i][share-1].append((routerindex + 1, time))
-                routerShares[i][routerindex].append(share)
+                if not share in routerShares[i][routerindex]:
+                    routerShares[i][routerindex].append(share)
     # Sort the data for each packet based on the timestamp
     for run in sharePaths:
         for shares in run:

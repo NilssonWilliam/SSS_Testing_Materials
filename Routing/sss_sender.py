@@ -17,7 +17,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "192.168.2.2"
+REMOTE = "192.168.6.2"
 
 REMOTES = [REMOTE]
 

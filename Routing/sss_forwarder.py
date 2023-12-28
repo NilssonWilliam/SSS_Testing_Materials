@@ -3,7 +3,7 @@ import threading
 
 HOST = ""
 
-REMOTE = "192.168.5.65"
+REMOTE = "192.168.2.1"
 
 PORT = 11111
 
