@@ -81,7 +81,7 @@ def test_secretsharing(iters):
         shares_acc = []
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.settimeout(0.0001)
+            s.settimeout(0.001)
             s.bind((HOST, PORT))
             s.listen()        
             while True:
