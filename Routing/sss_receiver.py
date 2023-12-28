@@ -17,7 +17,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "192.168.1.2"
+remote = ""
 
 PORT = 11111
 
@@ -97,17 +97,20 @@ def test_secretsharing(iters):
                     threading.Thread(target=handle_client,args=(conn, addr)).start()
             secret = recover_secret(shares_acc)
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((REMOTE, PORT+1))
+            c.connect((remote, PORT+1))
             c.sendall(str(secret).encode("utf-8"))
             c.close()
 
 def main():
     global threshold 
     global shares
+    global remote
     iters = 1
     if len(sys.argv) >= 2:
         threshold = int(sys.argv[1])
         shares = int(sys.argv[1])
+    if len(sys.argv) >= 3:
+        remote = sys.argv[2]
     print("Starting secret sharing tests")
     test_secretsharing(iters)
     

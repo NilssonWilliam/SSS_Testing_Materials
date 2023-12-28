@@ -1,9 +1,10 @@
 import socket
 import threading
+import sys
 
 HOST = ""
 
-REMOTE = "192.168.2.1"
+remote = ""
 
 PORT = 11111
 
@@ -19,7 +20,7 @@ def handle_client(conn, addr):
         print("Share was not properly received")
     else:
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        c.connect((REMOTE, PORT))
+        c.connect((remote, PORT))
         c.send(share)
         c.close()
         
@@ -39,6 +40,9 @@ def forward_shares():
                 threading.Thread(target=handle_client,args=(conn, addr)).start()
 
 def main():
+    global remote
+    if len(sys.argv) >= 2:
+        remote = sys.argv[1]
     forward_shares()
 
 if __name__ == "__main__":

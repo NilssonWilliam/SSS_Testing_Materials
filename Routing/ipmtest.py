@@ -6,8 +6,7 @@ import glob
 import os
 
 class MyTopology(IPTopo):
-    def build(self, n, *args, **kwargs):
-        print(n)
+    def build(self, *args, **kwargs):
         r1 = self.addRouter("r1")
         r2 = self.addRouter("r2")
         # Helper to create several routers in one function call 
@@ -28,7 +27,7 @@ def main():
     files = glob.glob("Logs/*")
     for f in files:
         os.remove(f)
-    net = IPNet(topo=MyTopology(25)) 
+    net = IPNet(topo=MyTopology()) 
     captures = []
     try:
         net.start()

@@ -17,9 +17,7 @@ shares = 10
 
 HOST = ""
 
-REMOTE = "192.168.6.2"
-
-REMOTES = [REMOTE]
+remotes = []
 
 PORT = 11111
 
@@ -52,7 +50,7 @@ def test_secretsharing(iters):
             secrets = generate_secret_shares(data)
             for i, v in enumerate(secrets):
                 c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                c.connect((REMOTES[i % len(REMOTES)], PORT))
+                c.connect((remotes[i % len(remotes)], PORT))
                 c.send(pickle.dumps(v))
                 c.close()
                 time.sleep(0.1)
@@ -65,10 +63,13 @@ def test_secretsharing(iters):
 def main():
     global threshold 
     global shares
+    global remotes
     iters = 1
     if len(sys.argv) >= 2:
         threshold = int(sys.argv[1])
         shares = int(sys.argv[1])
+    if len(sys.argv) >= 3:
+        remotes = sys.argv[2:]
     print("Starting secret sharing tests")
     test_secretsharing(iters)
     print("Finished")

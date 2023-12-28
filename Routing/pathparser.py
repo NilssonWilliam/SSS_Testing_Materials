@@ -5,7 +5,7 @@ import datetime
 
 FILEPATH = "/home/ubuntu/SSS_Testing_Materials/Routing/Logs"
 
-SOURCE = "192.168.1.2"
+SOURCE = "192.168.0.2"
 DESTINATION = "192.168.2.1"
 SSSPORT = "11111"
 
