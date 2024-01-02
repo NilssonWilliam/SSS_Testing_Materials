@@ -1,14 +1,14 @@
 import random
 import functools
-import sys
 import socket
 import pickle
 import threading
 import aes
 import shamirs
+import rsa
 
 """
-Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
+Secret sharing code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
 """
 
 PRIME = 4294967311
@@ -162,23 +162,41 @@ def test_aes(iters):
             c.sendall(res)
             c.close()
 
+def test_rsa(iters):
+    for i in range(iters):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen()
+            conn, addr = s.accept()
+            key = pickle.loads(conn.recv(4096))      
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen()
+            conn, addr = s.accept()
+            data = conn.recv(4096)   
+            res = rsa.decrypt(data, key) 
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c.connect((REMOTE, PORT+1))
+            c.sendall(res)
+            c.close()
+
 def main():
     global threshold 
     global shares
-    iters = 10
-    if len(sys.argv) >= 2:
-        threshold = int(sys.argv[1])
-        shares = int(sys.argv[1])
-    if len(sys.argv) >= 3:
-        iters = int(sys.argv[2])
-    print("Starting unprotected tests")
+    iters = 100
+    ns = [7, 15, 30]
+    ms = [1, 2, 3, 5, 7]
     test_unprotected(iters)
-    print("Starting secret sharing tests")
-    test_secretsharing(iters)
-    print("Starting secret sharing tests using package implementation")
-    test_secretsharing_package(iters)
-    print("Starting AES tests")
     test_aes(iters)
+    test_rsa(100)
+    for n in ns:
+        for m in ms:
+            shares = n
+            threshold = n
+            test_secretsharing(iters)
+            test_secretsharing_package(iters)
     
 
 

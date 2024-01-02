@@ -1,17 +1,18 @@
 import random
 import functools
-import sys
 import socket
 import pickle
 import threading
 import aes
 import shamirs
+import math
+import rsa
 
 """
-Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
+Secret sharing code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
 """
 
-PRIME = 4294967311
+PRIME = 2 ** 127 - 1
 
 threshold = 10
 
@@ -81,27 +82,33 @@ def test_secretsharing(iters):
     for i in range(iters):
         global shares_acc
         shares_acc = []
+        started = False
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.settimeout(0.000001)
             s.bind((HOST, PORT))
-            s.listen()        
+            s.listen(threshold)        
             while True:
                 try: 
                     conn, addr = s.accept() 
                 except socket.timeout:
-                    if len(shares_acc) >= threshold:
+                    if len(shares_acc) >= threshold and not started:
+                        started = True
+                        threading.Thread(target=do_response).start()
+                    if len(shares_acc) >= shares:
                         break
                     pass
                 except:
                     raise
                 else:
                     threading.Thread(target=handle_client,args=(conn, addr)).start()
-            secret = recover_secret(shares_acc)
-            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((REMOTE, PORT+1))
-            c.sendall(str(secret).encode("utf-8"))
-            c.close()
+
+def do_response():
+    secret = recover_secret(shares_acc)
+    c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    c.connect((REMOTE, PORT+1))
+    c.sendall(str(secret).encode("utf-8"))
+    c.close()
 
 def test_secretsharing_package(iters):
     for i in range(iters):
@@ -111,7 +118,7 @@ def test_secretsharing_package(iters):
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.settimeout(0.000001)
             s.bind((HOST, PORT))
-            s.listen()        
+            s.listen(threshold)        
             while True:
                 try: 
                     conn, addr = s.accept() 
@@ -162,23 +169,43 @@ def test_aes(iters):
             c.sendall(res)
             c.close()
 
+def test_rsa(iters):
+    for i in range(iters):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen()
+            conn, addr = s.accept()
+            key = pickle.loads(conn.recv(4096))      
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            s.bind((HOST, PORT))
+            s.listen()
+            conn, addr = s.accept()
+            data = conn.recv(4096)   
+            res = rsa.decrypt(data, key) 
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c.connect((REMOTE, PORT+1))
+            c.sendall(res)
+            c.close()
+
 def main():
     global threshold 
     global shares
-    iters = 10
-    if len(sys.argv) >= 2:
-        threshold = int(sys.argv[1])
-        shares = int(sys.argv[1])
-    if len(sys.argv) >= 3:
-        iters = int(sys.argv[2])
-    print("Starting unprotected tests")
+    iters = 1000
+    ns = [3, 5, 7, 11, 15, 30, 50]
     test_unprotected(iters)
-    print("Starting secret sharing tests")
-    test_secretsharing(iters)
-    print("Starting secret sharing tests using package implementation")
-    test_secretsharing_package(iters)
-    print("Starting AES tests")
     test_aes(iters)
+    test_rsa(100)
+    for n in ns:
+        ks = set([math.ceil(n/2), math.ceil(2*n/3), math.ceil(4*n/6), math.ceil(5*n/6), n])
+        for k in ks:
+            print(str(n) + " " + str(k))
+            shares = n
+            threshold = k
+            test_secretsharing(iters)
+            test_secretsharing_package(iters)
+    
     
 
 

@@ -6,7 +6,7 @@ import pickle
 import threading
 
 """
-Code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
+Secret sharing code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
 """
 
 PRIME = 4294967311
