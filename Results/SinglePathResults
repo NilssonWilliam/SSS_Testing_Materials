@@ -1,0 +1,53 @@
+In unprotected tests, average was 3.0814781188964844ms
+In AES tests, average was 220.6706473827362ms
+In RSA tests, average was 116.13474607467651ms
+In SSS self implemented tests, average was 6.226979732513428ms for k=2 and n=3
+In SSS package tests, average was 6.239339828491211ms for k=2 and n=3
+In SSS self implemented tests, average was 6.45298957824707ms for k=3 and n=3
+In SSS package tests, average was 6.854557037353516ms for k=3 and n=3
+In SSS self implemented tests, average was 8.277445077896118ms for k=3 and n=5
+In SSS package tests, average was 8.45122742652893ms for k=3 and n=5
+In SSS self implemented tests, average was 8.346400737762451ms for k=4 and n=5
+In SSS package tests, average was 9.130926370620728ms for k=4 and n=5
+In SSS self implemented tests, average was 8.276262760162354ms for k=5 and n=5
+In SSS package tests, average was 10.201553106307983ms for k=5 and n=5
+In SSS self implemented tests, average was 10.589762926101685ms for k=4 and n=7
+In SSS package tests, average was 11.071141242980957ms for k=4 and n=7
+In SSS self implemented tests, average was 10.597968101501465ms for k=5 and n=7
+In SSS package tests, average was 11.905173063278198ms for k=5 and n=7
+In SSS self implemented tests, average was 10.342841863632202ms for k=6 and n=7
+In SSS package tests, average was 12.343079566955566ms for k=6 and n=7
+In SSS self implemented tests, average was 10.469830513000488ms for k=7 and n=7
+In SSS package tests, average was 13.30837607383728ms for k=7 and n=7
+In SSS self implemented tests, average was 13.58847713470459ms for k=8 and n=11
+In SSS package tests, average was 17.73455309867859ms for k=8 and n=11
+In SSS self implemented tests, average was 13.878607749938965ms for k=10 and n=11
+In SSS package tests, average was 20.56918454170227ms for k=10 and n=11
+In SSS self implemented tests, average was 13.815153360366821ms for k=11 and n=11
+In SSS package tests, average was 22.18151593208313ms for k=11 and n=11
+In SSS self implemented tests, average was 13.693085193634033ms for k=6 and n=11
+In SSS package tests, average was 15.534908056259155ms for k=6 and n=11
+In SSS self implemented tests, average was 17.05818462371826ms for k=8 and n=15
+In SSS package tests, average was 21.181222677230835ms for k=8 and n=15
+In SSS self implemented tests, average was 17.374558925628662ms for k=10 and n=15
+In SSS package tests, average was 24.3231041431427ms for k=10 and n=15
+In SSS self implemented tests, average was 17.43239402770996ms for k=13 and n=15
+In SSS package tests, average was 29.273908853530884ms for k=13 and n=15
+In SSS self implemented tests, average was 16.935569047927856ms for k=15 and n=15
+In SSS package tests, average was 33.87689185142517ms for k=15 and n=15
+In SSS self implemented tests, average was 30.345341682434082ms for k=25 and n=30
+In SSS package tests, average was 80.14035129547119ms for k=25 and n=30
+In SSS self implemented tests, average was 29.901797771453857ms for k=20 and n=30
+In SSS package tests, average was 61.91319298744202ms for k=20 and n=30
+In SSS self implemented tests, average was 30.539419412612915ms for k=30 and n=30
+In SSS package tests, average was 103.2280604839325ms for k=30 and n=30
+In SSS self implemented tests, average was 29.63243055343628ms for k=15 and n=30
+In SSS package tests, average was 45.64606595039368ms for k=15 and n=30
+In SSS self implemented tests, average was 47.45729303359985ms for k=25 and n=50
+In SSS package tests, average was 95.43823337554932ms for k=25 and n=50
+In SSS self implemented tests, average was 48.224918365478516ms for k=34 and n=50
+In SSS package tests, average was 142.8359305858612ms for k=34 and n=50
+In SSS self implemented tests, average was 48.956029653549194ms for k=42 and n=50
+In SSS package tests, average was 195.4170253276825ms for k=42 and n=50
+In SSS self implemented tests, average was 49.01663637161255ms for k=50 and n=50
+In SSS package tests, average was 261.96395897865295ms for k=50 and n=50
