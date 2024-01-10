@@ -7,8 +7,10 @@ FILEPATH = "/home/ubuntu/SSS_Testing_Materials/Routing/Logs"
 
 SSSPORT = "11111"
 
-FILES = ["simple_test"]
+FILES = ["line_graph", "mesh_graph", "full_random"]
 RUNS = 1
+
+AMTNODES = [100, 200, 300, 500]
 
 
 
@@ -19,7 +21,7 @@ def getSharesFromFile(filename):
     last_timestamp = datetime.datetime.now()
     highest_index = 0
     for packet in capture:
-        if hasattr(packet, "data") and hasattr(packet, "ip") and hasattr(packet, "tcp"): # Must be TCP with data
+        if hasattr(packet, "data") and hasattr(packet, "tcp"): # Must be TCP with data
             if packet.tcp.dstport == SSSPORT: # Only traffic on the port used for the secret sharing scheme
                 data = pickle.loads(bytes.fromhex(packet.data.data))
                 index, nr = data
@@ -129,11 +131,12 @@ def getAllRoutes(data, index):
 
 def main():
     for fn in FILES:
-        for run in range(RUNS):
-            data, index = getAllFiles(fn + str(run) + "_")
-            sharePaths, routerShares = getAllRoutes(data, index)
-            print(sharePaths)
-            print(routerShares)
+        for nodes in AMTNODES:
+            for run in range(RUNS):
+                data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
+                sharePaths, routerShares = getAllRoutes(data, index)
+                print(sharePaths)
+                print(routerShares)
     
 
 

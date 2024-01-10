@@ -7,13 +7,13 @@ import glob
 import os
 import random
 
-TESTS = ["line_graph", "mesh_graph", "full_random"]
+TESTS = ["simple_test"]
 
 RUNS = 1
 
-AMTFWDS = [3, 5, 7, 11]
+AMTFWDS = [1, 2, 3]
 
-AMTNODES = [50, 100, 150, 200]
+AMTNODES = [100]
 
 class RandomizedTopo(IPTopo):
     def build(self, nodes, edges, hostcon, *args, **kwargs):
@@ -82,35 +82,28 @@ def verify_graph_hosts(hostcon, adj):
     return accepted and len(s) == len(hostcon)
 
 def fully_random_graph(nodes, edgeamt):
-    edges = set()
+    edges = []
     for _ in range(nodes * edgeamt):
-        a = random.SystemRandom().randint(1, nodes)
-        b = random.SystemRandom().randint(1, nodes)
-        if a != b:
-            edges.add((a, b))
-    return list(edges)
+        edges.append((random.SystemRandom().randint(1, nodes), random.SystemRandom().randint(1, nodes)))
+    return edges
 
 def mesh_graph(nodes, edgeamt):
-    edges = set()
+    edges = []
     for i in range(nodes):
         for _ in range(edgeamt):
-            b = random.SystemRandom().randint(1, nodes)
-            if b != i+1:
-                edges.add((i+1, b))
-    return list(edges)
+            edges.append((i+1, random.SystemRandom().randint(1, nodes)))
+    return edges
 
 def line_graph(nodes):
-    edges = set()
+    edges = []
     for i in range(nodes):
         if i+1 == nodes:
-            edges.add((i+1, 1))
+            edges.append((i+1, 1))
         else:
-            edges.add((i+1, i+2))
+            edges.append((i+1, i+2))
         if random.SystemRandom().randint(1, 2) == 2:
-            b = random.SystemRandom().randint(1, nodes)
-            if b != i+1:
-                edges.add((i+1, b))
-    return list(edges)
+            edges.append((i+1, random.SystemRandom().randint(1, nodes)))
+    return edges
 
 def generate_graph(test, nodes, run):
     edges = []
@@ -142,6 +135,7 @@ def generate_hostcon(nodes, adj):
 def generate_and_verify_graph(testname, nodes, run):
     edges = generate_graph(testname, nodes, run)
     while not verify_graph_connected(nodes, edges):
+        print("Attempting to make graph")
         edges = generate_graph(testname, nodes, run)
     # Make adjacency list for effiency
     adj = {}
@@ -152,6 +146,7 @@ def generate_and_verify_graph(testname, nodes, run):
         adj[str(b-1)].add(a-1)
     hostcon = generate_hostcon(nodes, adj)
     while not verify_graph_hosts(hostcon, adj):
+        print("Attempting to make hostcon")
         hostcon = generate_hostcon(nodes, adj)
     return edges, hostcon
     
@@ -166,31 +161,35 @@ def run_network(test, nodes, edges, hostcon):
         dstsw = net.switches[0]
         srcsw = net.switches[1]
         a, b = src.connectionsTo(dstsw)[0]
+        print(a, b)
         if str(src) in str(a):
             srcip = a.ip6
         else:
             srcip = b.ip6
-        # time.sleep(120)
-        # for i, r in enumerate(net.routers):
-        #     captures.append(r.popen("sudo tcpdump -i any -nn -U -s 0 -w Logs/" + test + str(i+1)))
-        # fwdlst = []
-        # for fwd in fwds:
-        #     fwd.popen("python3 sss_forwarder.py " + dst.defaultIntf().ip6)
-        #     a, b = fwd.connectionsTo(srcsw)[0]
-        #     if str(fwd) in str(a):
-        #         fwdlst.append(a.ip6)
-        #     else:
-        #         fwdlst.append(b.ip6)
-        # time.sleep(5)
-        # for amtfwd in AMTFWDS:
-        #     fwdstr = ""
-        #     for i in range(amtfwd):
-        #         fwdstr += fwdlst[i] + " "
-        #     dst.popen("python3 sss_receiver.py 33 " + srcip)
-        #     time.sleep(1)
-        #     sender = src.popen("python3 sss_sender.py 33 " + fwdstr)
-        #     print("Sender terminated with status:", sender.wait())
-        #     time.sleep(10)
+        print(srcip)
+        print(dst.defaultIntf().ip6)
+        time.sleep(120)
+        for i, r in enumerate(net.routers):
+            captures.append(r.popen("sudo tcpdump -i any -nn -U -s 0 -w Logs/" + test + str(i+1)))
+        fwdlst = []
+        for fwd in fwds:
+            fwd.popen("python3 sss_forwarder.py " + dst.defaultIntf().ip6)
+            a, b = fwd.connectionsTo(srcsw)[0]
+            if str(fwd) in str(a):
+                fwdlst.append(a.ip6)
+            else:
+                fwdlst.append(b.ip6)
+        time.sleep(5)
+        for amtfwd in AMTFWDS:
+            fwdstr = ""
+            for i in range(amtfwd):
+                fwdstr += fwdlst[i] + " "
+            dst.popen("python3 sss_receiver.py 33 " + srcip)
+            time.sleep(1)
+            sender = src.popen("python3 sss_sender.py 33 " + fwdstr)
+            print("Test done")
+            print(sender.wait())
+            time.sleep(10)
     finally:
         for cap in captures:
             cap.terminate()
@@ -207,15 +206,14 @@ def main():
             runs = range(3*RUNS)
         else:
             runs = range(RUNS)
-        for nodes in AMTNODES:
-            for run in runs:
+        for run in runs:
+            for nodes in AMTNODES:
                 test = testname + str(nodes) + "_" + str(run) + "_"
                 print("Starting test " + testname + str(nodes) + "_" + str(run))
                 edges, hostcon = generate_and_verify_graph(testname, nodes, run)
-                print(edges)
                 print("Network was generated")
-                run_network(test, nodes, edges, hostcon)
-                #run_network(test, 5, [(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)], [0, 2, 4, 5, 3])
+                #run_network(test, nodes, edges, hostcon)
+                run_network(test, 5, [(1, 2), (2, 3), (3, 4), (4, 5), (5, 1), (1, 1)], [0, 2, 4, 5, 3])
 
 if __name__ == "__main__":
     main()

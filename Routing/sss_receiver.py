@@ -79,7 +79,7 @@ def test_secretsharing(iters):
     for i in range(iters):
         global shares_acc
         shares_acc = []
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.settimeout(0.001)
             s.bind((HOST, PORT))
@@ -96,7 +96,7 @@ def test_secretsharing(iters):
                 else:
                     threading.Thread(target=handle_client,args=(conn, addr)).start()
             secret = recover_secret(shares_acc)
-            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            c = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             c.connect((remote, PORT+1))
             c.sendall(str(secret).encode("utf-8"))
             c.close()

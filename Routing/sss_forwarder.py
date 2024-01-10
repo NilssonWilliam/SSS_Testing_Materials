@@ -19,14 +19,14 @@ def handle_client(conn, addr):
     if share == None:
         print("Share was not properly received")
     else:
-        c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        c = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         c.connect((remote, PORT))
         c.send(share)
         c.close()
         
 
 def forward_shares():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT))
         s.listen() 

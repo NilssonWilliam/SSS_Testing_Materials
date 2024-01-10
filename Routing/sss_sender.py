@@ -41,7 +41,7 @@ def generate_secret_shares(data):
 
 def test_secretsharing(iters):
     for i in range(iters):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
             s.listen()        
@@ -49,7 +49,7 @@ def test_secretsharing(iters):
             start = time.time()
             secrets = generate_secret_shares(data)
             for i, v in enumerate(secrets):
-                c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                c = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
                 c.connect((remotes[i % len(remotes)], PORT))
                 c.send(pickle.dumps(v))
                 c.close()
