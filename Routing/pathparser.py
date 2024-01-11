@@ -8,9 +8,9 @@ FILEPATH = "/home/ubuntu/SSS_Testing_Materials/Routing/Logs"
 SSSPORT = "11111"
 
 FILES = ["line_graph", "mesh_graph", "full_random"]
-RUNS = 1
+RUNS = 5
 
-AMTNODES = [100, 200, 300, 500]
+AMTNODES = [50, 100, 150, 200]
 
 
 
@@ -42,6 +42,8 @@ def getIndexOfMissingRuns(a, b):
     indexes = []
     runindex = 0
     maxindex = len(a)
+    if a[0] == []:
+        return [a for a in range(len(b)-1)]
     for i, run in enumerate(b):
         if runindex == maxindex:
             indexes.append(i)
@@ -65,7 +67,7 @@ def getAllFiles(fn):
         nextExists = True
         counter = 1
         highestRun = 0
-        highestRunIndex = 1
+        highestRunIndex = 0
         while nextExists:
             data, index = getSharesFromFile(fn + str(counter))
             if counter == 1:

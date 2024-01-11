@@ -9,7 +9,7 @@ import random
 
 TESTS = ["line_graph", "mesh_graph", "full_random"]
 
-RUNS = 1
+RUNS = 5
 
 AMTFWDS = [3, 5, 7, 11]
 
@@ -76,8 +76,12 @@ def verify_graph_hosts(hostcon, adj):
         if dst == fwd:
             accepted = False
         nexthops = adj[str(fwd-1)]
-        if dst in nexthops:
-            accepted = False
+        for hop in nexthops:
+            if hop == dst:
+                accepted = False
+            else:
+                if dst in adj[str(hop)]:
+                    accepted = False
     s = set(hostcon)
     return accepted and len(s) == len(hostcon)
 
@@ -115,8 +119,8 @@ def line_graph(nodes):
 def generate_graph(test, nodes, run):
     edges = []
     if test == "full_random":
-        edgeamt = [3, 5, 10, 20]
-        edges = fully_random_graph(nodes, edgeamt[run % 4])
+        edgeamt = [3, 5, 10]
+        edges = fully_random_graph(nodes, edgeamt[run % 3])
     elif test == "mesh_graph":
         edgeamt = [3, 5, 10]
         edges = mesh_graph(nodes, edgeamt[run % 3])
@@ -143,7 +147,7 @@ def generate_and_verify_graph(testname, nodes, run):
     edges = generate_graph(testname, nodes, run)
     while not verify_graph_connected(nodes, edges):
         edges = generate_graph(testname, nodes, run)
-    # Make adjacency list for effiency
+    # Make adjacency list for efficiency
     adj = {}
     for i in range(nodes):
         adj[str(i)] = set()
@@ -170,27 +174,27 @@ def run_network(test, nodes, edges, hostcon):
             srcip = a.ip6
         else:
             srcip = b.ip6
-        # time.sleep(120)
-        # for i, r in enumerate(net.routers):
-        #     captures.append(r.popen("sudo tcpdump -i any -nn -U -s 0 -w Logs/" + test + str(i+1)))
-        # fwdlst = []
-        # for fwd in fwds:
-        #     fwd.popen("python3 sss_forwarder.py " + dst.defaultIntf().ip6)
-        #     a, b = fwd.connectionsTo(srcsw)[0]
-        #     if str(fwd) in str(a):
-        #         fwdlst.append(a.ip6)
-        #     else:
-        #         fwdlst.append(b.ip6)
-        # time.sleep(5)
-        # for amtfwd in AMTFWDS:
-        #     fwdstr = ""
-        #     for i in range(amtfwd):
-        #         fwdstr += fwdlst[i] + " "
-        #     dst.popen("python3 sss_receiver.py 33 " + srcip)
-        #     time.sleep(1)
-        #     sender = src.popen("python3 sss_sender.py 33 " + fwdstr)
-        #     print("Sender terminated with status:", sender.wait())
-        #     time.sleep(10)
+        time.sleep(120)
+        for i, r in enumerate(net.routers):
+            captures.append(r.popen("sudo tcpdump -i any -nn -U -s 0 -w Logs/" + test + str(i+1)))
+        fwdlst = []
+        for fwd in fwds:
+            fwd.popen("python3 sss_forwarder.py " + dst.defaultIntf().ip6)
+            a, b = fwd.connectionsTo(srcsw)[0]
+            if str(fwd) in str(a):
+                fwdlst.append(a.ip6)
+            else:
+                fwdlst.append(b.ip6)
+        time.sleep(5)
+        for amtfwd in AMTFWDS:
+            fwdstr = ""
+            for i in range(amtfwd):
+                fwdstr += fwdlst[i] + " "
+            dst.popen("python3 sss_receiver.py 33 " + srcip)
+            time.sleep(1)
+            sender = src.popen("python3 sss_sender.py 33 " + fwdstr)
+            print("Sender terminated with status:", sender.wait())
+            time.sleep(10)
     finally:
         for cap in captures:
             cap.terminate()
@@ -198,24 +202,24 @@ def run_network(test, nodes, edges, hostcon):
 
 def main():
     files = glob.glob("Logs/*")
-    for f in files:
-        os.remove(f)
+    # for f in files:
+    #     os.remove(f)
     for testname in TESTS:
-        if testname == "full_random":
-            runs = range(4*RUNS)
-        elif testname == "mesh_graph":
-            runs = range(3*RUNS)
-        else:
+        if testname == "line_graph":
             runs = range(RUNS)
+        else:
+            runs = range(3*RUNS)
         for nodes in AMTNODES:
             for run in runs:
                 test = testname + str(nodes) + "_" + str(run) + "_"
+                if "Logs/" + test + "1" in files:
+                    print(test + " already exists")
+                    continue
                 print("Starting test " + testname + str(nodes) + "_" + str(run))
                 edges, hostcon = generate_and_verify_graph(testname, nodes, run)
                 print(edges)
                 print("Network was generated")
                 run_network(test, nodes, edges, hostcon)
-                #run_network(test, 5, [(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)], [0, 2, 4, 5, 3])
 
 if __name__ == "__main__":
     main()
