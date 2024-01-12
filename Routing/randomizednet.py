@@ -162,6 +162,7 @@ def run_network(test, nodes, edges, hostcon):
         fwds = net.hosts[2:]
         dstsw = net.switches[0]
         srcsw = net.switches[1]
+        dstpsw = net.switches[2]
         a, b = src.connectionsTo(dstsw)[0]
         if str(src) in str(a):
             srcip = a.ip6
@@ -171,8 +172,13 @@ def run_network(test, nodes, edges, hostcon):
         for i, r in enumerate(net.routers):
             captures.append(r.popen("sudo tcpdump -i any -nn -U -s 0 -w Logs/" + test + str(i+1)))
         fwdlst = []
+        a, b = dst.connectionsTo(dstpsw)[0]
+        if str(dst) in str(a):
+            dstip = a.ip6
+        else:
+            dstip = b.ip6
         for fwd in fwds:
-            fwd.popen("python3 sss_forwarder.py " + dst.defaultIntf().ip6)
+            fwd.popen("python3 sss_forwarder.py " + dstip)
             a, b = fwd.connectionsTo(srcsw)[0]
             if str(fwd) in str(a):
                 fwdlst.append(a.ip6)
