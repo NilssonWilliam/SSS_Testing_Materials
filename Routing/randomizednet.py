@@ -75,13 +75,6 @@ def verify_graph_hosts(hostcon, adj):
     for fwd in hostcon[2:]:
         if dst == fwd:
             accepted = False
-        nexthops = adj[str(fwd-1)]
-        for hop in nexthops:
-            if hop == dst:
-                accepted = False
-            else:
-                if dst in adj[str(hop)]:
-                    accepted = False
     s = set(hostcon)
     return accepted and len(s) == len(hostcon)
 
