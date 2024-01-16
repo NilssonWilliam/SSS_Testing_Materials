@@ -185,7 +185,7 @@ def test_rsa(iters):
 def main():
     global threshold 
     global shares
-    iters = 100
+    iters = 1000
     ns = [7, 15, 30]
     ms = [1, 2, 3, 5, 7]
     test_unprotected(iters)

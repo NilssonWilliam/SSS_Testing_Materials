@@ -25,7 +25,7 @@ HOST = ""
 
 REMOTE = "192.168.5.65"
 
-REMOTES = ["192.168.2.244", "192.168.3.252", "192.168.4.221"]
+REMOTES = ["192.168.2.244", "192.168.3.252", "192.168.4.221", "192.168.6.19", "192.168.7.35", "192.168.8.31", "192.168.9.98"]
 
 PORT = 11111
 
@@ -70,7 +70,7 @@ def test_secretsharing(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In SSS self implemented tests, average was " + str(math.ceil(timeacc*1000)) + "ms for k=" + str(threshold) + " and n=" + str(shares))
+    print("In SSS self implemented tests, average was " + str(math.ceil(timeacc*1000)) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
 
 
 def test_secretsharing_package(iters):
@@ -96,7 +96,7 @@ def test_secretsharing_package(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In SSS package tests, average was " + str(math.ceil(timeacc*1000)) + "ms for k=" + str(threshold) + " and n=" + str(shares))
+    print("In SSS package tests, average was " + str(math.ceil(timeacc*1000)) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
 
 def test_unprotected(iters):
     timeacc = 0
@@ -153,13 +153,13 @@ def test_aes(iters):
 def test_rsa(iters):
     timeacc = 0
     for i in range(iters):
-        time.sleep(0.1)
+        time.sleep(0.2)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
             s.listen()        
             data = str(RINT(PRIME))
-            (pub, priv) = rsa.newkeys(4096)
+            (pub, priv) = rsa.newkeys(3072)
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             c.connect((REMOTE, PORT))

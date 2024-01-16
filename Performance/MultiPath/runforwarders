@@ -1,0 +1,15 @@
+#!/bin/bash
+scp sss_forwarder.py centos@10.202.4.80:~
+ssh centos@10.202.4.80 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.3.76:~
+ssh centos@10.202.3.76 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.6.245:~
+ssh centos@10.202.6.245 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.4.241:~
+ssh centos@10.202.4.241 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.6.60:~
+ssh centos@10.202.6.60 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.1.90:~
+ssh centos@10.202.1.90 python3 sss_forwarder.py &
+scp sss_forwarder.py centos@10.202.0.222:~
+ssh centos@10.202.0.222 python3 sss_forwarder.py &
