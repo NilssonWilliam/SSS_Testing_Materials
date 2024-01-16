@@ -13,7 +13,7 @@ SSSPORT = "11111"
 FILES = ["line_graph", "mesh_graph", "full_random"]
 RUNS = 5
 
-AMTNODES = [50, 100, 150, 200]
+AMTNODES = [50]
 
 
 
@@ -250,8 +250,8 @@ def compromise_probability(paths, routerdata, index):
                             added10 = True
                 nossstotal += 1
             total += 1
-        ansSec.append(([x/total for x in compromises5], [x/total for x in compromises10], nosss5 / nossstotal, nosss10 / nossstotal))
-        ansAva.append(([x/total for x in availability5], [x/total for x in availability10], nosss5 / nossstotal, nosss10 / nossstotal))
+        ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], nosss5 / nossstotal, nosss10 / nossstotal])
+        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], nosss5 / nossstotal, nosss10 / nossstotal])
     return ansSec, ansAva
 
         
@@ -272,7 +272,51 @@ def calculate_metrics(paths, routerdata, index):
     print(probability_availability)
     return minimum_captures_security, minimum_captures_availability, similarity, probability_security, probability_availability
 
+def threedimarrayavg(arr):
+    result = []
+    for i in range(len(arr[0])):
+        result.append([])
+        for j in range(len(arr[0][0])):
+            result.append(0)
+    for file in range(len(arr)):
+        for run in range(len(arr[0])):
+            for elem in range(len(arr[0][0])):
+                result[run][elem] += arr[file][run][elem]
+    for i in range(len(result)):
+        for j in range(len(result[0])):
+            result[i][j] = result[i][j]/len(arr)
+    return result
+
+def twodimarrayavg(arr):
+    result = []
+    for i in range(len(arr[0])):
+        result.append(0)
+    for i in range(len(arr)):
+        for j in range(len(arr[0])):
+            result[j] += arr[i][j]
+    for i in range(len(result)):
+        result[i] = result[i]/len(arr)
+
+            
+
 def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
+    #Minimum captures
+    print("For group " + str(fn) + "the averages are: ")
+    print("Minimum captures average: ")
+    mincapsecavg = threedimarrayavg(mincapsec)
+    mincapavaavg = threedimarrayavg(mincapava)
+    print(mincapsecavg)
+    print(mincapavaavg)
+    #Path similarity
+    print("Path similarity average: ")
+    pathsimavg = twodimarrayavg(pathsim)
+    print(pathsimavg)
+    #Probability
+    print("Probabilities of compromise: ")
+    probsecavg = threedimarrayavg(probsec)
+    probavaavg = threedimarrayavg(probava)
+    print(probsecavg)
+    print(probavaavg)
     return 0
 
 
