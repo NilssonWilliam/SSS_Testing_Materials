@@ -250,10 +250,11 @@ def calculate_metrics(paths, routerdata, index):
 def main():
     for fn in FILES:
         for nodes in AMTNODES:
-            for run in range(RUNS):
-                data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
-                sharePaths, routerShares = getAllRoutes(data, index)
-                calculate_metrics(sharePaths, routerShares, index)
+            if nodes != 200 or fn == "line_graph":
+                for run in range(RUNS):
+                    data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
+                    sharePaths, routerShares = getAllRoutes(data, index)
+                    calculate_metrics(sharePaths, routerShares, index)
     
 
 

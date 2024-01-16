@@ -112,10 +112,10 @@ def line_graph(nodes):
 def generate_graph(test, nodes, run):
     edges = []
     if test == "full_random":
-        edgeamt = [3, 5, 10]
+        edgeamt = [3, 4, 5]
         edges = fully_random_graph(nodes, edgeamt[run % 3])
     elif test == "mesh_graph":
-        edgeamt = [3, 5, 10]
+        edgeamt = [3, 4, 5]
         edges = mesh_graph(nodes, edgeamt[run % 3])
     else:
         edges = line_graph(nodes)
@@ -209,16 +209,17 @@ def main():
         else:
             runs = range(3*RUNS)
         for nodes in AMTNODES:
-            for run in runs:
-                test = testname + str(nodes) + "_" + str(run) + "_"
-                if "Logs/" + test + "1" in files:
-                    print(test + " already exists")
-                    continue
-                print("Starting test " + testname + str(nodes) + "_" + str(run))
-                edges, hostcon = generate_and_verify_graph(testname, nodes, run)
-                print(edges)
-                print("Network was generated")
-                run_network(test, nodes, edges, hostcon)
+            if nodes != 200 or testname == "line_graph":
+                for run in runs:
+                    test = testname + str(nodes) + "_" + str(run) + "_"
+                    if "Logs/" + test + "1" in files:
+                        print(test + " already exists")
+                        continue
+                    print("Starting test " + testname + str(nodes) + "_" + str(run))
+                    edges, hostcon = generate_and_verify_graph(testname, nodes, run)
+                    print(edges)
+                    print("Network was generated")
+                    run_network(test, nodes, edges, hostcon)
 
 if __name__ == "__main__":
     main()
