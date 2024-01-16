@@ -277,7 +277,22 @@ def threedimarrayavg(arr):
     for i in range(len(arr[0])):
         result.append([])
         for j in range(len(arr[0][0])):
-            result.append(0)
+            result[i].append(0)
+    for file in range(len(arr)):
+        for run in range(len(arr[0])):
+            for elem in range(len(arr[0][0])):
+                result[run][elem] += arr[file][run][elem]
+    for i in range(len(result)):
+        for j in range(len(result[0])):
+            result[i][j] = result[i][j]/len(arr)
+    return result
+
+def threedimarrayavgcompromise(arr):
+    result = []
+    for i in range(len(arr[0])):
+        result.append([])
+        for j in range(len(arr[0][0])):
+            result[i].append(0)
     for file in range(len(arr)):
         for run in range(len(arr[0])):
             for elem in range(len(arr[0][0])):
@@ -296,6 +311,7 @@ def twodimarrayavg(arr):
             result[j] += arr[i][j]
     for i in range(len(result)):
         result[i] = result[i]/len(arr)
+    return result
 
             
 
@@ -313,8 +329,8 @@ def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
     print(pathsimavg)
     #Probability
     print("Probabilities of compromise: ")
-    probsecavg = threedimarrayavg(probsec)
-    probavaavg = threedimarrayavg(probava)
+    probsecavg = threedimarrayavgcompromise(probsec)
+    probavaavg = threedimarrayavgcompromise(probava)
     print(probsecavg)
     print(probavaavg)
     return 0
