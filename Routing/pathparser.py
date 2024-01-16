@@ -215,10 +215,14 @@ def compromise_probability(paths, routerdata, index):
                 compromises5 += 1
             for p in path_run:
                 for j, n in enumerate(compromised_nodes):
+                    added5, added10 = False, False
                     if n in p:
-                        if j < nodes / 2:
+                        if j < nodes / 2 and not added5:
                             nosss5 += 1
-                        nosss10 += 1
+                            added5 = True
+                        if not added10:
+                            nosss10 += 1
+                            added10 = True
                 nossstotal += 1
             total += 1
         ans.append((compromises5 / total, compromises10 / total, nosss5 / nossstotal, nosss10 / nossstotal))
