@@ -128,12 +128,12 @@ def getAllRoutes(data, index):
             sharePathsNoTime[runindex].append([e[0] for e in shares])
     return sharePathsNoTime, routerShares
 
-def threshold_setcover(routerdatain, index):
+def threshold_setcover(routerdatain, thresholdin, index):
     routerdata = copy.deepcopy(routerdatain)
     ans = []
     for j in range(len(routerdata)):
         run = routerdata[j]
-        thresholds = [17, 22, 28, 33]
+        thresholds = copy.deepcopy(thresholdin)
         taken = set()
         counter = 0
         acc = [] 
@@ -183,21 +183,24 @@ def path_similarity(paths):
         ans.append(acc/nums)
     return ans
 
-def check_compromised(compromised_nodes, routers, index):
+def check_compromised(compromised_nodes, routers):
     shares = set()
     for compromised_node in compromised_nodes:
         router = routers[compromised_node]
         for share in router:
             shares.add(share)
-    return len(shares) == index
+    return len(shares)
 
 def compromise_probability(paths, routerdata, index):
-    ans = []
+    ansSec = []
+    ansAva = []
     for i in range(len(routerdata)):
         run = routerdata[i]
         path_run = paths[i]
-        compromises5 = 0
-        compromises10 = 0
+        compromises5 = [0, 0, 0]
+        compromises10 = [0, 0, 0]
+        availability5 = [0, 0, 0]
+        availability10 = [0, 0, 0]
         nosss5 = 0
         nosss10 = 0
         total = 0
@@ -209,10 +212,32 @@ def compromise_probability(paths, routerdata, index):
                 rng = random.SystemRandom().randint(0, len(run)-1)
                 if rng not in compromised_nodes:
                     compromised_nodes.append(rng)
-            if check_compromised(compromised_nodes, run, index):
-                compromises10 += 1
-            if check_compromised(compromised_nodes[nodes//2:], run, index):
-                compromises5 += 1
+            full = check_compromised(compromised_nodes, run)
+            half = check_compromised(compromised_nodes[nodes//2:], run)
+            if full >= math.ceil(index/2):
+                compromises10[0] += 1
+            if full >= math.ceil(3*index/4):
+                compromises10[1] += 1
+            if full >= index:
+                compromises10[2] += 1
+            if half >= math.ceil(index/2):
+                compromises5[0] += 1
+            if half >= math.ceil(3*index/4):
+                compromises5[1] += 1
+            if half >= index:
+                compromises5[2] += 1
+            if full >= index + 1 - math.ceil(index/2):
+                availability10[0] += 1
+            if full >= index + 1 - math.ceil(3*index/4):
+                availability10[1] += 1
+            if full >= index + 1 - index:
+                availability10[2] += 1
+            if half >= index + 1 - math.ceil(index/2):
+                availability5[0] += 1
+            if half >= index + 1 - math.ceil(3*index/4):
+                availability5[1] += 1
+            if half >= index + 1 - index:
+                availability5[2] += 1
             for p in path_run:
                 for j, n in enumerate(compromised_nodes):
                     added5, added10 = False, False
@@ -225,29 +250,30 @@ def compromise_probability(paths, routerdata, index):
                             added10 = True
                 nossstotal += 1
             total += 1
-        ans.append((compromises5 / total, compromises10 / total, nosss5 / nossstotal, nosss10 / nossstotal))
-    return ans
+        ansSec.append(([x/total for x in compromises5], [x/total for x in compromises10], nosss5 / nossstotal, nosss10 / nossstotal))
+        ansAva.append(([x/total for x in availability5], [x/total for x in availability10], nosss5 / nossstotal, nosss10 / nossstotal))
+    return ansSec, ansAva
 
         
 
 
 def calculate_metrics(paths, routerdata, index):
-    print("Calculating captures")
-    minimum_captures = threshold_setcover(routerdata, index)
+    minimum_captures_security = threshold_setcover(routerdata, [17, 22, 28, 33], index)
+    minimum_captures_availability = threshold_setcover(routerdata, [1, 6, 12, 17], index)
     print("Minimum caps:")
-    print(minimum_captures)
-    print("Calculating path similarity")
+    print(minimum_captures_security)
+    print(minimum_captures_availability)
     similarity = path_similarity(paths)
     print("Path similarity:")
     print(similarity)
-    print("Calculating probability of compromise")
-    probability = compromise_probability(paths, routerdata, index)
+    probability_security, probability_availability = compromise_probability(paths, routerdata, index)
     print("Probability of compromise:")
-    print(probability)
+    print(probability_security)
+    print(probability_availability)
+    return minimum_captures_security, minimum_captures_availability, similarity, probability_security, probability_availability
 
-
-            
-
+def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
+    return 0
 
 
 
@@ -255,10 +281,26 @@ def main():
     for fn in FILES:
         for nodes in AMTNODES:
             if nodes != 200 or fn == "line_graph":
+                mincapsec = []
+                mincapava = []
+                pathsim = []
+                probsec = []
+                probava = []
                 for run in range(RUNS):
                     data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
                     sharePaths, routerShares = getAllRoutes(data, index)
-                    calculate_metrics(sharePaths, routerShares, index)
+                    mcs, mca, sim, pcs, pca = calculate_metrics(sharePaths, routerShares, index)
+                    mincapsec.append(mcs)
+                    mincapava.append(mca)
+                    pathsim.append(sim)
+                    probsec.append(pcs)
+                    probava.append(pca)
+                if fn == "line_graph":
+                    avg_metrics_over_test(fn + str(nodes), mincapsec, mincapava, pathsim, probsec, probava)
+                else:
+                    for i in range(3):
+                        avg_metrics_over_test(fn + str(nodes) + "_" + str(i), mincapsec[i::3], mincapava[i::3], pathsim[i::3], probsec[i::3], probava[i::3])
+
     
 
 

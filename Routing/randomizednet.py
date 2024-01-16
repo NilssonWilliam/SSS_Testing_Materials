@@ -211,6 +211,8 @@ def main():
         for nodes in AMTNODES:
             if nodes != 200 or testname == "line_graph":
                 for run in runs:
+                    if nodes >= 150 and testname != "line_graph" and run % 3 != 0:
+                        continue
                     test = testname + str(nodes) + "_" + str(run) + "_"
                     if "Logs/" + test + "1" in files:
                         print(test + " already exists")
