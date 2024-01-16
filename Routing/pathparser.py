@@ -191,12 +191,17 @@ def check_compromised(compromised_nodes, routers, index):
             shares.add(share)
     return len(shares) == index
 
-def compromise_probability(routerdata, index):
+def compromise_probability(paths, routerdata, index):
     ans = []
-    for run in routerdata:
+    for i in range(len(routerdata)):
+        run = routerdata[i]
+        path_run = paths[i]
         compromises5 = 0
         compromises10 = 0
+        nosss5 = 0
+        nosss10 = 0
         total = 0
+        nossstotal = 0
         nodes = math.ceil(len(run)/10)
         for _ in range(10000):
             compromised_nodes = []
@@ -208,8 +213,15 @@ def compromise_probability(routerdata, index):
                 compromises10 += 1
             if check_compromised(compromised_nodes[nodes//2:], run, index):
                 compromises5 += 1
+            for p in path_run:
+                for j, n in enumerate(compromised_nodes):
+                    if n in p:
+                        if j < nodes / 2:
+                            nosss5 += 1
+                        nosss10 += 1
+                nossstotal += 1
             total += 1
-        ans.append((compromises5 / total, compromises10 / total))
+        ans.append((compromises5 / total, compromises10 / total, nosss5 / nossstotal, nosss10 / nossstotal))
     return ans
 
         
@@ -225,7 +237,7 @@ def calculate_metrics(paths, routerdata, index):
     print("Path similarity:")
     print(similarity)
     print("Calculating probability of compromise")
-    probability = compromise_probability(routerdata, index)
+    probability = compromise_probability(paths, routerdata, index)
     print("Probability of compromise:")
     print(probability)
 
