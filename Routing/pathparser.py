@@ -13,7 +13,7 @@ SSSPORT = "11111"
 FILES = ["line_graph", "mesh_graph", "full_random"]
 RUNS = 5
 
-AMTNODES = [50]
+AMTNODES = [50, 100, 150, 200]
 
 
 
@@ -291,14 +291,25 @@ def threedimarrayavgcompromise(arr):
     result = []
     for i in range(len(arr[0])):
         result.append([])
-        for j in range(len(arr[0][0])):
+        for j in range(0, 2):
+            result[i].append([])
+            for k in range(3):
+                result[i][j].append(0)
+        for j in range(2, len(arr[0][0])):
             result[i].append(0)
     for file in range(len(arr)):
         for run in range(len(arr[0])):
             for elem in range(len(arr[0][0])):
-                result[run][elem] += arr[file][run][elem]
+                if elem < 2:
+                    for arrelem in range(len(arr[0][0][0])):
+                        result[run][elem][arrelem] += arr[file][run][elem][arrelem]
+                else:
+                    result[run][elem] += arr[file][run][elem]
     for i in range(len(result)):
-        for j in range(len(result[0])):
+        for j in range(0, 2):
+            for k in range(len(result[0][0])):
+                result[i][j][k] = result[i][j][k]/len(arr)
+        for j in range(2, len(result[0])):
             result[i][j] = result[i][j]/len(arr)
     return result
 
@@ -317,7 +328,8 @@ def twodimarrayavg(arr):
 
 def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
     #Minimum captures
-    print("For group " + str(fn) + "the averages are: ")
+    print()
+    print("For group " + str(fn) + " the averages are: ")
     print("Minimum captures average: ")
     mincapsecavg = threedimarrayavg(mincapsec)
     mincapavaavg = threedimarrayavg(mincapava)
