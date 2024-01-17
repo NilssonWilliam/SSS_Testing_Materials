@@ -50,7 +50,7 @@ def generate_secret_shares(data):
 def test_secretsharing(iters):
     timeacc = 0
     for i in range(iters):
-        time.sleep(0.2)
+        time.sleep(0.5)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT+1))
@@ -72,15 +72,14 @@ def test_secretsharing(iters):
     timeacc = timeacc/iters
     print("In SSS self implemented tests, average was " + str(math.ceil(timeacc*1000)) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
 
-
 def test_secretsharing_package(iters):
     timeacc = 0
-    for i in range(iters):
-        time.sleep(0.2)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((HOST, PORT+1))
-            s.listen()        
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((HOST, PORT+1))
+        s.listen()  
+        for i in range(iters):
+            time.sleep(0.5)
             data = RINT(4294967296)
             start = time.time()
             secrets = shamirs.shares(data, quantity=shares, threshold=threshold)
@@ -191,7 +190,7 @@ def main():
     ms = [1, 2, 3, 5, 7]
     test_unprotected(iters)
     test_aes(iters)
-    #test_rsa(100)
+    test_rsa(10)
     for n in ns:
         for m in ms:
             shares = n

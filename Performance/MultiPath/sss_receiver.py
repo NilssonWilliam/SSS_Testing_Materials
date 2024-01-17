@@ -6,6 +6,8 @@ import threading
 import aes
 import shamirs
 import rsa
+import copy
+import time
 
 """
 Secret sharing code largely based on the example code found at https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing
@@ -78,56 +80,67 @@ def handle_client(conn, addr):
         shares_acc.append(share)
 
 def test_secretsharing(iters):
-    for i in range(iters):
-        global shares_acc
-        shares_acc = []
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.settimeout(0.000001)
-            s.bind((HOST, PORT))
-            s.listen()        
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.settimeout(0.000001)
+        s.bind((HOST, PORT))
+        s.listen(threshold)   
+        for i in range(iters):
+            global shares_acc
+            shares_acc = []
             while True:
                 try: 
                     conn, addr = s.accept() 
                 except socket.timeout:
                     if len(shares_acc) >= threshold:
+                        shares = copy.deepcopy(shares_acc)
+                        threading.Thread(target=do_response,args=[shares]).start()
+                        time.sleep(0.1)
                         break
                     pass
                 except:
                     raise
                 else:
                     threading.Thread(target=handle_client,args=(conn, addr)).start()
-            secret = recover_secret(shares_acc)
-            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((REMOTE, PORT+1))
-            c.sendall(str(secret).encode("utf-8"))
-            c.close()
+
+def do_response(shares):
+    secret = recover_secret(shares)
+    c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    c.connect((REMOTE, PORT+1))
+    c.sendall(str(secret).encode("utf-8"))
+    c.close()
 
 def test_secretsharing_package(iters):
-    for i in range(iters):
-        global shares_acc
-        shares_acc = []
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.settimeout(0.000001)
-            s.bind((HOST, PORT))
-            s.listen()        
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.settimeout(0.000001)
+        s.bind((HOST, PORT))
+        s.listen()   
+        for i in range(iters):
+            global shares_acc
+            shares_acc = []
             while True:
                 try: 
                     conn, addr = s.accept() 
                 except socket.timeout:
-                    if len(shares_acc) >= threshold:
+                    if len(shares_acc) >= threshold:  
+                        shares = copy.deepcopy(shares_acc)
+                        threading.Thread(target=package_response,args=[shares]).start()
+                        time.sleep(0.1)
                         break
                     pass
                 except:
                     raise
                 else:
                     threading.Thread(target=handle_client,args=(conn, addr)).start()
-            secret = shamirs.interpolate(shares_acc, threshold=threshold)
-            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            c.connect((REMOTE, PORT+1))
-            c.sendall(str(secret).encode("utf-8"))
-            c.close()
+            
+
+def package_response(shares):
+    secret = shamirs.interpolate(shares, threshold=threshold)
+    c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    c.connect((REMOTE, PORT+1))
+    c.sendall(str(secret).encode("utf-8"))
+    c.close()
 
 def test_unprotected(iters):
     for i in range(iters):
@@ -169,18 +182,28 @@ def test_rsa(iters):
             s.bind((HOST, PORT))
             s.listen()
             conn, addr = s.accept()
-            key = pickle.loads(conn.recv(8192))      
+            data = []
+            while True:
+                packet = conn.recv(4096)
+                if not packet: break
+                data.append(packet)
+            key = pickle.loads(b"".join(data))     
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
             s.listen()
             conn, addr = s.accept()
-            data = conn.recv(4096)   
-            res = rsa.decrypt(data, key) 
+            data = []
+            while True:
+                packet = conn.recv(4096)
+                if not packet: break
+                data.append(packet) 
+            res = rsa.decrypt(b"".join(data), key) 
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             c.connect((REMOTE, PORT+1))
             c.sendall(res)
             c.close()
+            print("Responded " + str(res))
 
 def main():
     global threshold 
@@ -190,9 +213,10 @@ def main():
     ms = [1, 2, 3, 5, 7]
     test_unprotected(iters)
     test_aes(iters)
-    #test_rsa(100)
+    test_rsa(10)
     for n in ns:
         for m in ms:
+            print("Starting next run")
             shares = n
             threshold = n
             test_secretsharing(iters)
