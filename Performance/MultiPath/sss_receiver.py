@@ -213,7 +213,7 @@ def main():
     ms = [1, 2, 3, 5, 7]
     test_unprotected(iters)
     test_aes(iters)
-    test_rsa(10)
+    test_rsa(100)
     for n in ns:
         for m in ms:
             print("Starting next run")

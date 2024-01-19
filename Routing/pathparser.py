@@ -352,13 +352,17 @@ def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
 def main():
     for fn in FILES:
         for nodes in AMTNODES:
+            if fn == "line_graph":
+                runs = range(RUNS)
+            else:
+                runs = range(3*RUNS)
             if nodes != 200 or fn == "line_graph":
                 mincapsec = []
                 mincapava = []
                 pathsim = []
                 probsec = []
                 probava = []
-                for run in range(RUNS):
+                for run in runs:
                     data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
                     sharePaths, routerShares = getAllRoutes(data, index)
                     mcs, mca, sim, pcs, pca = calculate_metrics(sharePaths, routerShares, index)
