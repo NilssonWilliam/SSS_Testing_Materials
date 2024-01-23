@@ -10,7 +10,7 @@ FILEPATH = "/home/ubuntu/SSS_Testing_Materials/Routing/Logs"
 
 SSSPORT = "11111"
 
-FILES = ["line_graph", "mesh_graph", "full_random"]
+FILES = ["line_graph", "mesh_graph", "full_random", "manual_configuration"]
 RUNS = 5
 
 AMTNODES = [50, 100, 150, 200]
@@ -48,6 +48,8 @@ def getIndexOfMissingRuns(a, b):
     if a[0] == []:
         return [a for a in range(len(b)-1)]
     for i, run in enumerate(b):
+        if(len(run)) == 0:
+            continue
         if runindex == maxindex:
             indexes.append(i)
             continue
@@ -191,12 +193,15 @@ def check_compromised(compromised_nodes, routers):
             shares.add(share)
     return len(shares)
 
-def compromise_probability(paths, routerdata, index):
+def compromise_probability(fn, paths, routerdata, index):
     ansSec = []
     ansAva = []
     for i in range(len(routerdata)):
         run = routerdata[i]
         path_run = paths[i]
+        ignored = path_run[0][-1]
+        if fn == "manual_configuration":
+            ignored = -1
         compromises5 = [0, 0, 0]
         compromises10 = [0, 0, 0]
         availability5 = [0, 0, 0]
@@ -210,7 +215,7 @@ def compromise_probability(paths, routerdata, index):
             compromised_nodes = []
             while len(compromised_nodes) < nodes:
                 rng = random.SystemRandom().randint(0, len(run)-1)
-                if rng not in compromised_nodes:
+                if rng not in compromised_nodes and rng != ignored:
                     compromised_nodes.append(rng)
             full = check_compromised(compromised_nodes, run)
             half = check_compromised(compromised_nodes[nodes//2:], run)
@@ -257,7 +262,7 @@ def compromise_probability(paths, routerdata, index):
         
 
 
-def calculate_metrics(paths, routerdata, index):
+def calculate_metrics(fn, paths, routerdata, index):
     minimum_captures_security = threshold_setcover(routerdata, [17, 22, 28, 33], index)
     minimum_captures_availability = threshold_setcover(routerdata, [1, 6, 12, 17], index)
     print("Minimum caps:")
@@ -266,7 +271,7 @@ def calculate_metrics(paths, routerdata, index):
     similarity = path_similarity(paths)
     print("Path similarity:")
     print(similarity)
-    probability_security, probability_availability = compromise_probability(paths, routerdata, index)
+    probability_security, probability_availability = compromise_probability(fn, paths, routerdata, index)
     print("Probability of compromise:")
     print(probability_security)
     print(probability_availability)
@@ -365,7 +370,7 @@ def main():
                 for run in runs:
                     data, index = getAllFiles(fn + str(nodes) + "_" + str(run) + "_")
                     sharePaths, routerShares = getAllRoutes(data, index)
-                    mcs, mca, sim, pcs, pca = calculate_metrics(sharePaths, routerShares, index)
+                    mcs, mca, sim, pcs, pca = calculate_metrics(fn, sharePaths, routerShares, index)
                     mincapsec.append(mcs)
                     mincapava.append(mca)
                     pathsim.append(sim)
@@ -373,6 +378,8 @@ def main():
                     probava.append(pca)
                 if fn == "line_graph":
                     avg_metrics_over_test(fn + str(nodes), mincapsec, mincapava, pathsim, probsec, probava)
+                elif fn == "manual_configuration":
+                    pass
                 else:
                     for i in range(3):
                         avg_metrics_over_test(fn + str(nodes) + "_" + str(i), mincapsec[i::3], mincapava[i::3], pathsim[i::3], probsec[i::3], probava[i::3])
