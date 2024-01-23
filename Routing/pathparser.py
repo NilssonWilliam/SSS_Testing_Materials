@@ -272,7 +272,7 @@ def compromise_probability(fn, paths, routerdata, index):
                 nossstotal += 1
             total += 1
         ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], [x/total for x in compromises25], [x/total for x in compromises50], nosss5 / nossstotal, nosss10 / nossstotal])
-        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], nosss5 / nossstotal, nosss10 / nossstotal])
+        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], [], [], nosss5 / nossstotal, nosss10 / nossstotal])
     return ansSec, ansAva
 
         
@@ -312,16 +312,16 @@ def threedimarrayavgcompromise(arr):
     result = []
     for i in range(len(arr[0])):
         result.append([])
-        for j in range(0, 2):
+        for j in range(0, 4):
             result[i].append([])
             for k in range(3):
                 result[i][j].append(0)
-        for j in range(2, len(arr[0][0])):
+        for j in range(4, len(arr[0][0])):
             result[i].append(0)
     for file in range(len(arr)):
         for run in range(len(arr[0])):
             for elem in range(len(arr[0][0])):
-                if elem < 2:
+                if elem < 4:
                     for arrelem in range(len(arr[0][0][0])):
                         result[run][elem][arrelem] += arr[file][run][elem][arrelem]
                 else:
