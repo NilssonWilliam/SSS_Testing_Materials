@@ -199,7 +199,7 @@ def compromise_probability(fn, paths, routerdata, index):
     for i in range(len(routerdata)):
         run = routerdata[i]
         path_run = paths[i]
-        ignored = path_run[0][-1]
+        ignored = path_run[0][-1] - 1
         if fn == "manual_configuration":
             ignored = -1
         compromises5 = [0, 0, 0]
@@ -357,7 +357,7 @@ def avg_metrics_over_test(fn, mincapsec, mincapava, pathsim, probsec, probava):
 def main():
     for fn in FILES:
         for nodes in AMTNODES:
-            if fn == "line_graph":
+            if fn == "line_graph" or fn == "manual_configuration":
                 runs = range(RUNS)
             else:
                 runs = range(3*RUNS)
