@@ -199,7 +199,10 @@ def compromise_probability(fn, paths, routerdata, index):
     for i in range(len(routerdata)):
         run = routerdata[i]
         path_run = paths[i]
-        ignored = path_run[0][-1] - 1
+        b = 0
+        while(len(path_run[b]) <= 0):
+            b += 1
+        ignored = path_run[b][-1] - 1
         if fn == "manual_configuration":
             ignored = -1
         compromises5 = [0, 0, 0]
