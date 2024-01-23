@@ -70,7 +70,7 @@ def test_secretsharing(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In SSS self implemented tests, average was " + str(math.ceil(timeacc*1000)) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
+    print("In SSS self implemented tests, average was " + str(timeacc*1000) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
 
 def test_secretsharing_package(iters):
     timeacc = 0
@@ -95,7 +95,7 @@ def test_secretsharing_package(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In SSS package tests, average was " + str(math.ceil(timeacc*1000)) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
+    print("In SSS package tests, average was " + str(timeacc*1000) + "ms for n=" + str(shares) + " and m=" + str(forwarders))
 
 def test_unprotected(iters):
     timeacc = 0
@@ -118,7 +118,7 @@ def test_unprotected(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In unprotected tests, average was " + str(math.ceil(timeacc*1000)) + "ms")
+    print("In unprotected tests, average was " + str(timeacc*1000) + "ms")
 
 def test_aes(iters):
     timeacc = 0
@@ -147,7 +147,7 @@ def test_aes(iters):
                 print(f"Server answered with {ans} but secret was {data}")
             timeacc += end-start
     timeacc = timeacc/iters
-    print("In AES tests, average was " + str(math.ceil(timeacc*1000)) + "ms")
+    print("In AES tests, average was " + str(timeacc*1000) + "ms")
 
 def test_rsa(iters):
     timeacc = 0
