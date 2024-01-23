@@ -167,8 +167,8 @@ def threshold_setcover(routerdatain, thresholdin, index):
     return ans
 
 def path_similarity_single(a, b):
-    overlap = len([v for v in a if v in b])
-    total = len(set(a+b))
+    overlap = len([v for v in a if v in b]) - 1
+    total = len(set(a+b)) - 1
     return overlap/total
 
 def path_similarity(paths):
