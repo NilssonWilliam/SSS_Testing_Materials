@@ -1,33 +1,33 @@
-In unprotected tests, average was 38ms
-In AES tests, average was 260ms
+In unprotected tests, average was 16.063573360443115ms
+In AES tests, average was 232.8580904006958ms
 In RSA tests, average was 139.99853134155273ms
-In SSS self implemented tests, average was 52ms for n=7 and m=1
-In SSS package tests, average was 62ms for n=7 and m=1
-In SSS self implemented tests, average was 69ms for n=7 and m=2
-In SSS package tests, average was 50ms for n=7 and m=2
-In SSS self implemented tests, average was 51ms for n=7 and m=3
-In SSS package tests, average was 55ms for n=7 and m=3
-In SSS self implemented tests, average was 38ms for n=7 and m=5
-In SSS package tests, average was 36ms for n=7 and m=5
-In SSS self implemented tests, average was 29ms for n=7 and m=7
-In SSS package tests, average was 37ms for n=7 and m=7
-In SSS self implemented tests, average was 65ms for n=15 and m=1
-In SSS package tests, average was 90ms for n=15 and m=1
-In SSS self implemented tests, average was 79ms for n=15 and m=2
-In SSS package tests, average was 77ms for n=15 and m=2
-In SSS self implemented tests, average was 71ms for n=15 and m=3
-In SSS package tests, average was 84ms for n=15 and m=3
-In SSS self implemented tests, average was 101ms for n=15 and m=5
-In SSS package tests, average was 105ms for n=15 and m=5
-In SSS self implemented tests, average was 103ms for n=15 and m=7
-In SSS package tests, average was 134ms for n=15 and m=7
-In SSS self implemented tests, average was 103ms for n=30 and m=1
-In SSS package tests, average was 187ms for n=30 and m=1
-In SSS self implemented tests, average was 97ms for n=30 and m=2
-In SSS package tests, average was 168ms for n=30 and m=2
-In SSS self implemented tests, average was 88ms for n=30 and m=3
-In SSS package tests, average was 193ms for n=30 and m=3
-In SSS self implemented tests, average was 95ms for n=30 and m=5
-In SSS package tests, average was 204ms for n=30 and m=5
-In SSS self implemented tests, average was 79ms for n=30 and m=7
-In SSS package tests, average was 159ms for n=30 and m=7
+In SSS self implemented tests, average was 25.58838129043579ms for n=7 and m=1
+In SSS package tests, average was 28.938066959381104ms for n=7 and m=1
+In SSS self implemented tests, average was 25.233731269836426ms for n=7 and m=2
+In SSS package tests, average was 27.68697738647461ms for n=7 and m=2
+In SSS self implemented tests, average was 23.901667594909668ms for n=7 and m=3
+In SSS package tests, average was 26.71374797821045ms for n=7 and m=3
+In SSS self implemented tests, average was 24.336869716644287ms for n=7 and m=5
+In SSS package tests, average was 27.60683536529541ms for n=7 and m=5
+In SSS self implemented tests, average was 23.69462490081787ms for n=7 and m=7
+In SSS package tests, average was 26.633453369140625ms for n=7 and m=7
+In SSS self implemented tests, average was 44.369492530822754ms for n=15 and m=1
+In SSS package tests, average was 61.38211965560913ms for n=15 and m=1
+In SSS self implemented tests, average was 39.896483421325684ms for n=15 and m=2
+In SSS package tests, average was 57.608773708343506ms for n=15 and m=2
+In SSS self implemented tests, average was 39.43201541900635ms for n=15 and m=3
+In SSS package tests, average was 56.300392150878906ms for n=15 and m=3
+In SSS self implemented tests, average was 36.808905601501465ms for n=15 and m=5
+In SSS package tests, average was 55.38597345352173ms for n=15 and m=5
+In SSS self implemented tests, average was 35.091402530670166ms for n=15 and m=7
+In SSS package tests, average was 52.85568952560425ms for n=15 and m=7
+In SSS self implemented tests, average was 75.40520429611206ms for n=30 and m=1
+In SSS package tests, average was 146.675922870636ms for n=30 and m=1
+In SSS self implemented tests, average was 68.50001811981201ms for n=30 and m=2
+In SSS package tests, average was 140.25528192520142ms for n=30 and m=2
+In SSS self implemented tests, average was 64.90190744400024ms for n=30 and m=3
+In SSS package tests, average was 138.58664989471436ms for n=30 and m=3
+In SSS self implemented tests, average was 61.0628080368042ms for n=30 and m=5
+In SSS package tests, average was 133.56364965438843ms for n=30 and m=5
+In SSS self implemented tests, average was 57.764832973480225ms for n=30 and m=7
+In SSS package tests, average was 131.29303693771362ms for n=30 and m=7
