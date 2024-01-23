@@ -204,47 +204,63 @@ def compromise_probability(fn, paths, routerdata, index):
             ignored = -1
         compromises5 = [0, 0, 0]
         compromises10 = [0, 0, 0]
+        compromises25 = [0, 0, 0]
+        compromises50 = [0, 0, 0]
         availability5 = [0, 0, 0]
         availability10 = [0, 0, 0]
         nosss5 = 0
         nosss10 = 0
         total = 0
         nossstotal = 0
-        nodes = math.ceil(len(run)/10)
+        nodes = math.ceil(len(run)/2)
         for _ in range(10000):
             compromised_nodes = []
             while len(compromised_nodes) < nodes:
                 rng = random.SystemRandom().randint(0, len(run)-1)
                 if rng not in compromised_nodes and rng != ignored:
                     compromised_nodes.append(rng)
-            full = check_compromised(compromised_nodes, run)
-            half = check_compromised(compromised_nodes[nodes//2:], run)
-            if full >= math.ceil(index/2):
+            fifty = check_compromised(compromised_nodes, run)
+            twentyfive = check_compromised(compromised_nodes[0::2], run)
+            ten = check_compromised(compromised_nodes[0::5], run)
+            five = check_compromised(compromised_nodes[0::10], run)
+            if fifty >= math.ceil(index/2):
+                compromises50[0] += 1
+            if fifty >= math.ceil(3*index/4):
+                compromises50[1] += 1
+            if fifty >= index:
+                compromises50[2] += 1
+            if twentyfive >= math.ceil(index/2):
+                compromises25[0] += 1
+            if twentyfive >= math.ceil(3*index/4):
+                compromises25[1] += 1
+            if twentyfive >= index:
+                compromises25[2] += 1
+            if ten >= math.ceil(index/2):
                 compromises10[0] += 1
-            if full >= math.ceil(3*index/4):
+            if ten >= math.ceil(3*index/4):
                 compromises10[1] += 1
-            if full >= index:
+            if ten >= index:
                 compromises10[2] += 1
-            if half >= math.ceil(index/2):
+            if five >= math.ceil(index/2):
                 compromises5[0] += 1
-            if half >= math.ceil(3*index/4):
+            if five >= math.ceil(3*index/4):
                 compromises5[1] += 1
-            if half >= index:
+            if five >= index:
                 compromises5[2] += 1
-            if full >= index + 1 - math.ceil(index/2):
+            if ten >= index + 1 - math.ceil(index/2):
                 availability10[0] += 1
-            if full >= index + 1 - math.ceil(3*index/4):
+            if ten >= index + 1 - math.ceil(3*index/4):
                 availability10[1] += 1
-            if full >= index + 1 - index:
+            if ten >= index + 1 - index:
                 availability10[2] += 1
-            if half >= index + 1 - math.ceil(index/2):
+            if five >= index + 1 - math.ceil(index/2):
                 availability5[0] += 1
-            if half >= index + 1 - math.ceil(3*index/4):
+            if five >= index + 1 - math.ceil(3*index/4):
                 availability5[1] += 1
-            if half >= index + 1 - index:
+            if five >= index + 1 - index:
                 availability5[2] += 1
             for p in path_run:
-                for j, n in enumerate(compromised_nodes):
+                for j, n in enumerate(compromised_nodes[0::5]):
                     added5, added10 = False, False
                     if n in p:
                         if j < nodes / 2 and not added5:
@@ -255,7 +271,7 @@ def compromise_probability(fn, paths, routerdata, index):
                             added10 = True
                 nossstotal += 1
             total += 1
-        ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], nosss5 / nossstotal, nosss10 / nossstotal])
+        ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], [x/total for x in compromises25], [x/total for x in compromises50], nosss5 / nossstotal, nosss10 / nossstotal])
         ansAva.append([[x/total for x in availability5], [x/total for x in availability10], nosss5 / nossstotal, nosss10 / nossstotal])
     return ansSec, ansAva
 
@@ -311,10 +327,10 @@ def threedimarrayavgcompromise(arr):
                 else:
                     result[run][elem] += arr[file][run][elem]
     for i in range(len(result)):
-        for j in range(0, 2):
+        for j in range(0, 4):
             for k in range(len(result[0][0])):
                 result[i][j][k] = result[i][j][k]/len(arr)
-        for j in range(2, len(result[0])):
+        for j in range(4, len(result[0])):
             result[i][j] = result[i][j]/len(arr)
     return result
 
