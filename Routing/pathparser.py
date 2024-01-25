@@ -215,6 +215,8 @@ def compromise_probability(fn, paths, routerdata, index):
         availability50 = [0, 0, 0]
         nosss5 = 0
         nosss10 = 0
+        nosss25 = 0
+        nosss50 = 0
         total = 0
         nossstotal = 0
         nodes = math.ceil(len(run)/2)
@@ -277,19 +279,25 @@ def compromise_probability(fn, paths, routerdata, index):
             if five >= index + 1 - index:
                 availability5[2] += 1
             for p in path_run:
-                for j, n in enumerate(compromised_nodes[0::5]):
-                    added5, added10 = False, False
+                added5, added10, added25, added50 = False, False
+                for j, n in enumerate(compromised_nodes):
                     if n in p:
-                        if j < nodes / 2 and not added5:
+                        if j < nodes / 10 and not added5:
                             nosss5 += 1
                             added5 = True
-                        if not added10:
+                        if j < nodes / 5 and not added10:
                             nosss10 += 1
                             added10 = True
+                        if j < nodes / 2 and not added25:
+                            nosss25 += 1
+                            added25 = True
+                        if not added50:
+                            nosss50 += 1
+                            added50 = True
                 nossstotal += 1
             total += 1
-        ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], [x/total for x in compromises25], [x/total for x in compromises50], nosss5 / nossstotal, nosss10 / nossstotal])
-        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], [x/total for x in availability25], [x/total for x in availability50], nosss5 / nossstotal, nosss10 / nossstotal])
+        ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], [x/total for x in compromises25], [x/total for x in compromises50], nosss5 / nossstotal, nosss10 / nossstotal, nosss25 / nossstotal, nosss50 / nossstotal])
+        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], [x/total for x in availability25], [x/total for x in availability50], nosss5 / nossstotal, nosss10 / nossstotal, nosss25 / nossstotal, nosss50 / nossstotal])
     return ansSec, ansAva
 
         
