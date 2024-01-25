@@ -211,6 +211,8 @@ def compromise_probability(fn, paths, routerdata, index):
         compromises50 = [0, 0, 0]
         availability5 = [0, 0, 0]
         availability10 = [0, 0, 0]
+        availability25 = [0, 0, 0]
+        availability50 = [0, 0, 0]
         nosss5 = 0
         nosss10 = 0
         total = 0
@@ -250,6 +252,18 @@ def compromise_probability(fn, paths, routerdata, index):
                 compromises5[1] += 1
             if five >= index:
                 compromises5[2] += 1
+            if fifty >= index + 1 - math.ceil(index/2):
+                availability50[0] += 1
+            if fifty >= index + 1 - math.ceil(3*index/4):
+                availability50[1] += 1
+            if fifty >= index + 1 - index:
+                availability50[2] += 1
+            if twentyfive >= index + 1 - math.ceil(index/2):
+                availability25[0] += 1
+            if twentyfive >= index + 1 - math.ceil(3*index/4):
+                availability25[1] += 1
+            if twentyfive >= index + 1 - index:
+                availability25[2] += 1
             if ten >= index + 1 - math.ceil(index/2):
                 availability10[0] += 1
             if ten >= index + 1 - math.ceil(3*index/4):
@@ -275,7 +289,7 @@ def compromise_probability(fn, paths, routerdata, index):
                 nossstotal += 1
             total += 1
         ansSec.append([[x/total for x in compromises5], [x/total for x in compromises10], [x/total for x in compromises25], [x/total for x in compromises50], nosss5 / nossstotal, nosss10 / nossstotal])
-        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], [-1, -1, -1], [-1, -1, -1], nosss5 / nossstotal, nosss10 / nossstotal])
+        ansAva.append([[x/total for x in availability5], [x/total for x in availability10], [x/total for x in availability25], [x/total for x in availability50], nosss5 / nossstotal, nosss10 / nossstotal])
     return ansSec, ansAva
 
         
