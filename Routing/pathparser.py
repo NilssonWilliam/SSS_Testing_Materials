@@ -279,7 +279,7 @@ def compromise_probability(fn, paths, routerdata, index):
             if five >= index + 1 - index:
                 availability5[2] += 1
             for p in path_run:
-                added5, added10, added25, added50 = False, False
+                added5, added10, added25, added50 = False, False, False, False
                 for j, n in enumerate(compromised_nodes):
                     if n in p:
                         if j < nodes / 10 and not added5:
